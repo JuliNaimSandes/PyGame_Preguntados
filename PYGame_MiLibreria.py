@@ -201,30 +201,30 @@ def escribir_puntaje(puntj : int) -> str:
 def dibujar_fondo(pantalla : pygame.surface, pantalla_id : int):
     match(pantalla_id):
         case 0:
-            pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Preguntados\Assets\Imagenes\imgFondo2.png"), 5)
+            pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgFondo2.png"), 5)
 
         case 1: #Fondo de las preguntas
             pantalla.fill([12, 24, 13])
-            pg_dibujar_imagen(pantalla, pygame.image.load("Preguntados\Assets\Imagenes\imgFondo3.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
+            pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgFondo3.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
 
         case 2: #Fondo de configuracion
             pantalla.fill([17, 18, 40])
-            pg_dibujar_imagen(pantalla, pygame.image.load("Preguntados\Assets\Imagenes\imgFondo4.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
+            pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgFondo4.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
 
         case 3: #Fondo del ranking
             pantalla.fill([62, 42, 12])
-            pg_dibujar_imagen(pantalla, pygame.image.load("Preguntados\Assets\Imagenes\imgFondo5.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
+            pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgFondo5.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
 
 #Funcion para definir que musica usar segun la pantalla id.
 def definir_musica(pantalla_id : int, volumen : float) -> pygame.mixer_music:
     match(pantalla_id):
         case 1: #Musica de las preguntas (Solo se reproducira si las preguntas ya estan habilitadas!)
-            musica = "Preguntados\Assets\Audio\musPreguntas.wav"
+            musica = "Assets\Audio\musPreguntas.wav"
         
         case 3: #Musica del Ranking
-            musica = "Preguntados\Assets\Audio\musPuntaje.wav"
+            musica = "Assets\Audio\musPuntaje.wav"
 
         case _: #Por defecto se usa la musica del menu.
-            musica = "Preguntados\Assets\Audio\musMenu.wav"
+            musica = "Assets\Audio\musMenu.wav"
 
     return pg_audio_reproducir(musica, True, volumen)

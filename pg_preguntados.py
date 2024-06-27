@@ -100,9 +100,9 @@ class claseBotonOpcion(claseBoton):
 
         #Reproducir sonido dependiendo de que si fue o no correcta la opcion decidida.
         if (acierto):
-            pg_audio_reproducir("Preguntados\Assets\Audio\sndAcierto.wav", False, volumen)
+            pg_audio_reproducir("Assets\Audio\sndAcierto.wav", False, volumen)
         else:
-            pg_audio_reproducir("Preguntados\Assets\Audio\sndError.wav", False, volumen * 0.75)
+            pg_audio_reproducir("Assets\Audio\sndError.wav", False, volumen * 0.75)
 
         return acierto
 
@@ -276,7 +276,7 @@ while bucleJuego:
                                     reproducir_sonido = False
 
                             if (reproducir_sonido):
-                                pg_audio_reproducir("Preguntados\Assets\Audio\sndBoton.wav", False, volumen[1])
+                                pg_audio_reproducir("Assets\Audio\sndBoton.wav", False, volumen[1])
 
                         elif (type(boton) == claseBotonOpcion):   #Evento de click para los botones de respuesta.
                             if (boton.tomar_decision(respuestas[prg_actual], volumen[1]) == True):
@@ -332,7 +332,7 @@ while bucleJuego:
 
     #Logo de la primera pantalla
     if (pantalla_id == 0):
-        pg_dibujar_imagen(pantalla, pygame.image.load("Preguntados\Assets\Imagenes\imgLogo.png"), 
+        pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgLogo.png"), 
             [resolucion[0] / 2 - 320, 60], 0.5)
     
     #Puntaje (y intentos restantes) y Pregunta de la pantalla de preguntas.
@@ -370,7 +370,7 @@ while bucleJuego:
         boton.dibujar(pantalla, pantalla_id)
 
 
-    pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Preguntados\Assets\Imagenes\imgDesvanecimiento.png"), 1, trsc_transpariencia)
+    pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgDesvanecimiento.png"), 1, trsc_transpariencia)
     pygame.display.flip()   #Actualiza el dibujado de la pantalla
 
 pygame.quit() # Fin
