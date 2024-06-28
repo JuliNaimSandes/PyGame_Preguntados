@@ -55,13 +55,27 @@ class claseBoton():
         self.color_borde_ = [0, 65, 255] #Color de los bordes
         self.color_aux_ = self.color_
         self.color_borde_aux_ = self.color_borde_
+        self.mouse_encima = False
 
         #Se define el Rect del boton temporalmente, se modifica cuando se usa su metodo de dibujado.
         self.rect_ = pygame.draw.rect(pantalla, self.color_, [ubicacion[0], ubicacion[1], tamanio[0], tamanio[1]])
         self.interactuable = False #Si esta en true, es posible de interactuar con el boton.
     
     def dibujar(self, pantalla : pygame.surface, pantalla_id : int):
-        if (self.elemento_id == pantalla_id and self.interactuable):
+        if (self.elemento_id == pantalla_id):
+            if (self.interactuable == True):
+                self.color_ = self.color_aux_
+                self.color_borde_ = self.color_borde_aux_
+
+                #Se ilumina el borde si esta el mouse encima.
+                if (self.mouse_encima):
+                    self.color_ = [255, 255, 255]
+                    self.color_borde_ = [255, 255, 255]
+            else:
+                self.color_ = [64, 64, 64]
+                self.color_borde_ = [32, 32, 32]
+                self.mouse_encima = False
+
             self.rect_ = pg_dibujar_boton(pantalla, self.texto_, self.ubicacion_, self.tamanio_, self.color_, self.color_borde_, [0,0,0])
     
 class claseBotonOpcion(claseBoton):
@@ -79,20 +93,11 @@ class claseBotonOpcion(claseBoton):
         self.color_borde_aux_ = self.color_borde_
         self.rect_ = None
         self.interactuable = False
+        self.mouse_encima = False
     
     def dibujar(self, pantalla : pygame.surface, pantalla_id : int):
         self.texto_ = f"Opcion {self.opcion_}: {self.respuesta_}"
-
-        if (self.elemento_id == pantalla_id):
-            #Cambiar los colores si es que el boton esta disponible.
-            if (self.interactuable == True):
-                self.color_ = self.color_aux_
-                self.color_borde_ = self.color_borde_aux_
-            else:
-                self.color_ = [64, 64, 64]
-                self.color_borde_ = [32, 32, 32]
-
-            self.rect_ = pg_dibujar_boton(pantalla, self.texto_, self.ubicacion_, self.tamanio_, self.color_, self.color_borde_, [0,0,0])
+        claseBoton.dibujar(self, pantalla, pantalla_id)
     
     #Este metodo se va a fijar si era la respuesta correcta la suya.
     def tomar_decision(self, opcion_correcta : str, volumen : float):
@@ -105,6 +110,24 @@ class claseBotonOpcion(claseBoton):
             pg_audio_reproducir("Assets\Audio\sndError.wav", False, volumen * 0.75)
 
         return acierto
+
+class claseBotonCheck():
+    def __init__(self, ubicacion : list, valor : bool, elemento_id : int): #Constructor
+        self.ubicacion_ = [round(ubicacion[0]), round(ubicacion[1])]
+        self.check_ = valor
+        self.elemento_id = elemento_id
+        self.interactuable = False
+    
+    def dibujar(self, pantalla : pygame.surface, pantalla_id : int):
+        if (self.elemento_id == pantalla_id):
+            if (self.interactuable == True):
+                imagen = 
+            else:
+                self.color_ = [64, 64, 64]
+                self.color_borde_ = [32, 32, 32]
+                self.mouse_encima = False
+
+            self.rect_ = pg_dibujar_boton(pantalla, self.texto_, self.ubicacion_, self.tamanio_, self.color_, self.color_borde_, [0,0,0])
 
 #Inicializadores
 pygame.init()       #Se inicializa pygame
@@ -139,7 +162,7 @@ lista_botones = [
     claseBoton("Ver Puntajes", [ub_boton_x, ub_boton_y], tam_boton, 8, 0),
     claseBoton("Salir", [ub_boton_x, ub_boton_y+(tam_boton[1]+sep_botones)*2], tam_boton, 0, 0),
     claseBoton("Pregunta", [ub_boton_x, 120], tam_boton, 11, 1),
-    claseBoton("Reiniciar", [ub_boton_x + round((resolucion[0] / 2) / 2), 500], tam_boton, 12, 1),
+    claseBoton("Reiniciar", [ub_boton_x + round((resolucion[0] / 2) / 2), 556], tam_boton, 12, 1),
     claseBoton("Configuracion", [ub_boton_x, ub_boton_y+tam_boton[1]+sep_botones], tam_boton, 3, 0),
     claseBoton("Volver", [64, 64], tam_boton, 1, 2),
     claseBoton("Mutear Musicas", [ub_boton_x, 164], tam_boton, 9, 2),
@@ -147,7 +170,8 @@ lista_botones = [
     claseBoton("Volver", [ub_boton_x, 556], tam_boton, 5, 3),
     claseBotonOpcion("A", [(resolucion[0] / 2) - 240, ub_boton_y], 1),
     claseBotonOpcion("B", [(resolucion[0] / 2) - 240, ub_boton_y+64], 1),
-    claseBotonOpcion("C", [(resolucion[0] / 2) - 240, ub_boton_y+128], 1)
+    claseBotonOpcion("C", [(resolucion[0] / 2) - 240, ub_boton_y+128], 1),
+    claseBoton("Volver", [ub_boton_x - round((resolucion[0] / 2) / 2), 556], tam_boton, 5, 1)
 ]
 
 
@@ -163,8 +187,14 @@ volumen_ref = [volumen[0], volumen[1]]        #Y esta variable va a ser la refer
 puntaje = 0                     #Se ira acumulando con cada pregunta contestada correctamente.
 prg_actual = -1                 #Esta variable sera la que buscara el indice de preguntas,opciones y respuestas.
 preguntas_habilitadas = False   #Se volvera true una vez que comenzamos con las preguntas.
-actualizar_botones = True      #Si esta en True, los botones de opciones actualizaran sus propiedades.
+actualizar_botones = True       #Si esta en True, los botones de opciones actualizaran sus propiedades.
 intentos_disponibles = 2        #Y esto contara los intentos que aun le quedan al jugador.
+top_mejores = leer_archivo_json("Preguntados_Ranking.json") #Esta variable tendra a los mejores puntajes registrados.
+top_mejores['ranking'] = ordenar_ranking(top_mejores)       #Y esto ordenara directamente el ranking.
+juego_terminado = False         #Si esta en true, entonces le pedira de una el nombre al usuario.
+nombre_jugador = ""             #Nombre que se registre del jugador si es que su puntaje cumple para estar en los mejores. (3-20 caracteres)
+flash_transpariencia = 0        #Transparencia del Flash en la pantalla de preguntas.
+flash = False                   #Si es true, se vera un flash en la pantalla. (Solo funcional en la pantalla de preguntas)
 
 #Accion
 bucleJuego = True
@@ -204,15 +234,28 @@ while bucleJuego:
                         tipo_transicion = 0
                         volumen_ref[0] = volumen[0]
                         musica_actual = None
+            
+            #Manejo del Flash
+            if (pantalla_id == 1):
+                if (flash):
+                    if (flash_transpariencia > 0):
+                        flash_transpariencia -= 4
+                    else:
+                        flash_transpariencia = 0
+                        flash = False
+            else:
+                flash = False
+                flash_transpariencia = 0
 
+        #Movimiento del mouse.
         if (pEvent.type == pygame.MOUSEMOTION):
             #Esto es para iluminar los botones que seran seleccionados
             for boton in lista_botones:
                 if (boton.interactuable == True and transicionando == False):
                     if boton.rect_.collidepoint(pEvent.pos):
-                        boton.color_borde_ = [255, 255, 255]
+                        boton.mouse_encima = True
                     else:
-                        boton.color_borde_ = boton.color_borde_aux_
+                        boton.mouse_encima = False
         
         #Evento de clickeo de mouse.
         if pEvent.type == pygame.MOUSEBUTTONDOWN:
@@ -281,6 +324,8 @@ while bucleJuego:
                         elif (type(boton) == claseBotonOpcion):   #Evento de click para los botones de respuesta.
                             if (boton.tomar_decision(respuestas[prg_actual], volumen[1]) == True):
                                 if (intentos_disponibles > 0):
+                                    flash_transpariencia = 128
+                                    flash = True
                                     puntaje += 10
                                     prg_actual += 1
                                     activarOpciones = True
@@ -295,6 +340,7 @@ while bucleJuego:
                                         if type(botonOpcion) == claseBotonOpcion:
                                             botonOpcion.interactuable = False
 
+                                    juego_terminado = True
                                     pg_audio_detener(musica_actual)
                                 
                                 actualizar_botones = True
@@ -308,6 +354,9 @@ while bucleJuego:
                         
                         #Reinicio del juego
                         if (reiniciar):
+                            flash_transpariencia = 128
+                            flash = True
+
                             puntaje = 0
 
                             if (musica_actual != None):
@@ -325,7 +374,7 @@ while bucleJuego:
                             actualizar_botones = True
 
     #Musica y Fondo
-    pantalla.fill([0, 0, 0])    #Aca hay un filling para sobreponer todo lo que estaba antes.
+    pantalla.fill(C_NEGRO)    #Aca hay un filling para sobreponer todo lo que estaba antes.
     dibujar_fondo(pantalla, pantalla_id)  #Graficado de los fondos.
     if (musica_actual == None and pantalla_id != 1): #Musica
         musica_actual = definir_musica(pantalla_id, volumen_real[0])
@@ -335,14 +384,37 @@ while bucleJuego:
         pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgLogo.png"), 
             [resolucion[0] / 2 - 320, 60], 0.5)
     
-    #Puntaje (y intentos restantes) y Pregunta de la pantalla de preguntas.
+    #Pantalla de preguntas
     if (pantalla_id == 1):
 
+        #"PUNAJE *** | INTENTOS *"
         pg_crear_texto(pantalla, f"PUNTAJE: {escribir_puntaje(puntaje)} | INTENTOS : {intentos_disponibles}", 
             [resolucion[0] / 2, 80], [255, 65, 65], 30, True)
 
+        #Pregunta
         if (prg_actual >= 0 and prg_actual < len(preguntas)):
             pg_crear_texto(pantalla, f"{preguntas[prg_actual]}", [resolucion[0] / 2, 220], [255, 255, 0], 42, True)
+
+    #Texto del ranking y el mismo ranking
+    if (pantalla_id == 3):
+        pg_crear_texto(pantalla, f"--Los 7 mejores puntajes--", 
+            [resolucion[0] / 2, 80], [250, 250, 45], 65, True)
+        
+        #Impresion de los mejores y sus nombres
+        for i in range(len(top_mejores['ranking'])):
+            lista = top_mejores['ranking']
+
+            #El color de texto va a variar dependiendo de que tan alto en el ranking esta el jugador.
+            color_texto = [255, 255, 255]
+            if (i == 0):    #Primero
+                color_texto = [255, 255, 0]
+            elif (i == 1):    #Segundo
+                color_texto = [150, 150, 150]
+            elif (i == 2):    #Tercero
+                color_texto = [165, 55, 0]
+
+            pg_crear_texto(pantalla, f"{i+1} . {lista[i]['nombre']:20}{escribir_puntaje(lista[i]['puntaje'])}", 
+                [resolucion[0] / 2, 140+(48*i)], color_texto, 48, True)
 
     #Dibujado de botones.
     for boton in lista_botones:
@@ -369,6 +441,8 @@ while bucleJuego:
         
         boton.dibujar(pantalla, pantalla_id)
 
+    if (pantalla_id == 1):
+        pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgFlash.png"), 1, flash_transpariencia)
 
     pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgDesvanecimiento.png"), 1, trsc_transpariencia)
     pygame.display.flip()   #Actualiza el dibujado de la pantalla

@@ -1,4 +1,6 @@
 import pygame   #Importacion de la libreria.
+import json as jsonFunciones
+import os as SistemaOperativo
 
 #Constantes
 #Para normalmente referenciar los ejes X e Y, voy a usar estas 2 constantes por si necesitamos algun cambio.
@@ -10,6 +12,63 @@ C_NEGRO = [0, 0, 0]
 C_GRIS = [128, 128, 128]
 C_BLANCO = [255, 255, 255]
 
+'''
+FUNCIONES GENERALES
+
+que no necesariamente tienen que ver mucho con las funciones orientadas a PyGame...
+'''
+
+def contar_elementos(elementos) -> int:
+    '''
+        Cuenta la cantidad de elementos dentro de un objeto iterable.
+        Recibe string/lista.
+        Retorna la cantidad de caracteres de una cadena o la cantidad de elementos de una lista.
+    '''
+
+    contador = 0
+    for i in elementos:
+        contador += 1
+
+    return contador
+
+#Funcion tomada de mi biblioteca original.
+def crear_archivo_diccionario(nombre_archivo: str, formato_archivo: str, contenido : dict):
+    '''
+        Crea un archivo en base al contenido de un diccionario.
+
+        Args
+        nombre_archivo (str) : Nombre del archivo de salida.
+        formato_archivo (str) : Formato del archivo de salida.
+        contenido (dict) : El contenido del archivo, en esta funcion debe de ser un diccionario (DICT).
+    '''
+
+    if (type(contenido) != dict): #Solo se aceptara contenido que sea diccionario.
+        print("El contenido dado no es un diccionario!")
+    else:
+        with open(f"{nombre_archivo}.{formato_archivo}","w") as archivo:
+            if (formato_archivo.lower() == "json"):
+                jsonFunciones.dump(contenido,archivo,indent=4,ensure_ascii=False)
+            else:
+                texto = ""
+                for juego in contenido['juegos']:
+                    texto += f"{juego['nombre']} - {juego['empresa']},"
+                
+                archivo.write(texto)
+
+#Funcion tomada de mi biblioteca original.
+def leer_archivo_json(ruta: str):
+    '''
+        Lee un archivo JSON, devolvera los datos leidos del JSON.
+
+        Args
+        ruta (str) : Ruta del archivo.
+    '''
+    datos_json = {}
+    if (SistemaOperativo.path.exists(ruta)):
+        with open(ruta,"r") as archivo:
+            datos_json = jsonFunciones.load(archivo)
+    
+    return datos_json
 
 def validar_lista(lista : list, max_elementos : int, msg : str, val_pred : int = 0):
     if (type(lista) != list):
@@ -23,7 +82,41 @@ def validar_lista(lista : list, max_elementos : int, msg : str, val_pred : int =
     
     return lista
 
-#Funciones
+def ordenar_ranking(diccionario: dict) -> list:
+    '''
+        Se devolvera una lista con el ranking ya ordenado.
+        Args
+        diccionario (dict) : Diccionario con el ranking
+
+        Return
+        ranking_ordenado (list) : Lista con el ranking ordenado.
+    '''
+
+    ranking_ordenado = []
+
+    if (contar_elementos(diccionario) > 0):
+        ranking_ordenado = diccionario['ranking']
+
+        #Compararemos entre si todos los elementos. (Burbujeo)
+        for i in range(contar_elementos(ranking_ordenado)-1):
+            for j in range(i+1, contar_elementos(ranking_ordenado)):
+
+                dato1 = ranking_ordenado[i]['puntaje']
+                dato2 = ranking_ordenado[j]['puntaje']
+
+                #Swapeo de datos.
+                if (dato1 < dato2):
+                    aux = ranking_ordenado[i]
+                    ranking_ordenado[i] = ranking_ordenado[j]
+                    ranking_ordenado[j] = aux
+    
+    return ranking_ordenado
+
+'''
+FUNCIONES ORIENTADAS A PYGAME
+
+Mas que nada dibujado de formas!
+'''
 def pg_dibujar_circulo(pantalla : pygame.surface, color : list, ubicacion : list, radio : int):
     #Verficaciones
     color = validar_lista(color, 3, "Color Invalido!")
