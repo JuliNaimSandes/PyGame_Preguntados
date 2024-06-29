@@ -3,6 +3,7 @@ import math
 import sys
 from datos import lista as lista_preguntas
 from PYGame_MiLibreria import *
+import random
 
 '''
 A. Analizar detenidamente el set de datos (puede agregarle más preguntas si así lo desea).
@@ -111,23 +112,42 @@ class claseBotonOpcion(claseBoton):
 
         return acierto
 
-class claseBotonCheck():
-    def __init__(self, ubicacion : list, valor : bool, elemento_id : int): #Constructor
+class claseBotonBandera():
+    def __init__(self, ch_id : int, texto : str, ubicacion : list, valor : bool, elemento_id : int): #Constructor
+        self.texto_ = texto #Texto que saldra a la izquierda del boton.
+        self.id_ = ch_id    #Con esta ID el click detectara que bandera cambiar.
+        self.dist_txtb_ = 96  #Distancia entre el boton y el texto, normalmente 124.
         self.ubicacion_ = [round(ubicacion[0]), round(ubicacion[1])]
         self.check_ = valor
         self.elemento_id = elemento_id
         self.interactuable = False
+        self.rect_ = None
     
     def dibujar(self, pantalla : pygame.surface, pantalla_id : int):
         if (self.elemento_id == pantalla_id):
             if (self.interactuable == True):
-                imagen = 
+                imagen = pygame.image.load("Assets\Imagenes\imgActivado.png")
+                if (self.check_ == False):
+                    imagen = pygame.image.load("Assets\Imagenes\imgDesactivado.png")
             else:
-                self.color_ = [64, 64, 64]
-                self.color_borde_ = [32, 32, 32]
-                self.mouse_encima = False
+                imagen = pygame.image.load("Assets\Imagenes\imgCheckND.png")
+                
+            #Dibujado del texto y la imagen.
+            pg_crear_texto(pantalla, self.texto_, [self.ubicacion_[0] - self.dist_txtb_, self.ubicacion_[1] + 24], [200, 255, 200], 42, True)
+            self.rect_ = pg_dibujar_imagen(pantalla, imagen, [self.ubicacion_[0] + self.dist_txtb_, self.ubicacion_[1]], 3)
 
-            self.rect_ = pg_dibujar_boton(pantalla, self.texto_, self.ubicacion_, self.tamanio_, self.color_, self.color_borde_, [0,0,0])
+#Decidi dejar este metodo aca por lo unico para este programa que es.
+def buscar_check_por_id(lista_objetos : list, id_arg : int) -> claseBotonBandera:
+    boton_encontrado = None
+    if (contar_elementos(lista_objetos) > 0):
+        for boton in lista_objetos:
+            if (type(boton) == claseBotonBandera):
+                if (boton.id_ == id_arg):
+                    boton_encontrado = boton
+                    break
+
+    return boton_encontrado
+
 
 #Inicializadores
 pygame.init()       #Se inicializa pygame
@@ -155,23 +175,27 @@ tam_boton = [208, 40]   #Tamaño para cada boton.
 ub_boton_x = (resolucion[0] / 2) - (tam_boton[0] / 2)   #Ubicacion predeterminada para los botones (X)
 ub_boton_y = (resolucion[1] / 2) - (tam_boton[1] / 2)   #Ubicacion predeterminada para los botones (Y)
 sep_botones = 32        #Cuanto separamos cada boton uno del otro en Y.
+sep_botones_check = 64  #Lo mismo de arriba pero para los botones bandera.
 
 #Definicion de botones
 lista_botones = [
     claseBoton("Jugar", [ub_boton_x, ub_boton_y-tam_boton[1]-sep_botones], tam_boton, 6, 0),
     claseBoton("Ver Puntajes", [ub_boton_x, ub_boton_y], tam_boton, 8, 0),
     claseBoton("Salir", [ub_boton_x, ub_boton_y+(tam_boton[1]+sep_botones)*2], tam_boton, 0, 0),
-    claseBoton("Pregunta", [ub_boton_x, 120], tam_boton, 11, 1),
-    claseBoton("Reiniciar", [ub_boton_x + round((resolucion[0] / 2) / 2), 556], tam_boton, 12, 1),
+    claseBoton("Pregunta", [ub_boton_x, 120], tam_boton, 9, 1),
+    claseBoton("Reiniciar", [ub_boton_x + round((resolucion[0] / 2) / 2), 556], tam_boton, 10, 1),
     claseBoton("Configuracion", [ub_boton_x, ub_boton_y+tam_boton[1]+sep_botones], tam_boton, 3, 0),
     claseBoton("Volver", [64, 64], tam_boton, 1, 2),
-    claseBoton("Mutear Musicas", [ub_boton_x, 164], tam_boton, 9, 2),
-    claseBoton("Mutear Sonidos", [ub_boton_x, 164+tam_boton[1]+sep_botones], tam_boton, 10, 2),
     claseBoton("Volver", [ub_boton_x, 556], tam_boton, 5, 3),
     claseBotonOpcion("A", [(resolucion[0] / 2) - 240, ub_boton_y], 1),
     claseBotonOpcion("B", [(resolucion[0] / 2) - 240, ub_boton_y+64], 1),
     claseBotonOpcion("C", [(resolucion[0] / 2) - 240, ub_boton_y+128], 1),
-    claseBoton("Volver", [ub_boton_x - round((resolucion[0] / 2) / 2), 556], tam_boton, 5, 1)
+    claseBoton("Volver", [ub_boton_x - round((resolucion[0] / 2) / 2), 556], tam_boton, 5, 1),
+    claseBotonBandera(1, "Musica", [resolucion[0] / 2, 164], True, 2),
+    claseBotonBandera(2, "Sonidos",[resolucion[0] / 2, 164+sep_botones_check], True, 2),
+    claseBotonBandera(3, "Flash",[resolucion[0] / 2, 164+(sep_botones_check * 2)], True, 2),
+    claseBotonBandera(4, "Modo Infinito",[resolucion[0] / 2, 164+(sep_botones_check * 3)], False, 2),
+    claseBotonBandera(5, "Modo Aleatorio",[resolucion[0] / 2, 164+(sep_botones_check * 4)], False, 2)
 ]
 
 
@@ -195,6 +219,13 @@ juego_terminado = False         #Si esta en true, entonces le pedira de una el n
 nombre_jugador = ""             #Nombre que se registre del jugador si es que su puntaje cumple para estar en los mejores. (3-20 caracteres)
 flash_transpariencia = 0        #Transparencia del Flash en la pantalla de preguntas.
 flash = False                   #Si es true, se vera un flash en la pantalla. (Solo funcional en la pantalla de preguntas)
+flash_habilitado = True         #Si es true, el flash podra ejecutarse con normalidad.
+modo_infinito = False           #Si es true, la seccion de preguntas no parara hasta que el usuario pierda.
+modo_aleatorio = False          #Si es true, la siguiente pregunta sera una aleatoria de las disponibles.
+maximo_preguntas = contar_elementos(preguntas)
+contador_preguntas = 0
+ingreso_nombre = False          #Si es true, en la pantalla de preguntas se le pedira al usuario ingresar el nombre.
+tiempo_msj = 0                  #Contador usado para mostrar la notificacion de "Tu puntaje fue guardado!"
 
 #Accion
 bucleJuego = True
@@ -202,176 +233,263 @@ while bucleJuego:
     pg_titulo("Preguntados [Julian Naim Sandes]")
     for pEvent in pygame.event.get():
 
-        #Se verifica si el usuario quiere cerrar la ventana
-        if pEvent.type == pygame.QUIT:
-            bucleJuego = False
+        #Eventos
+        match pEvent.type:
 
-        #Ticks
-        if (pEvent.type == pygame.USEREVENT): #Tick
-            #Manejo de Musica
-            if (musica_actual != None):
-                if (volumen_real[0] < volumen_ref[0]):
-                    volumen_real[0] += 0.001
-                elif (volumen_real[0] > volumen_ref[0]):
-                    volumen_real[0] -= 0.005
+            #Ticks
+            case pygame.USEREVENT:
+                #Manejo de Musica
+                if (musica_actual != None):
+                    if (volumen_real[0] < volumen_ref[0]):
+                        volumen_real[0] += 0.001
+                    elif (volumen_real[0] > volumen_ref[0]):
+                        volumen_real[0] -= 0.005
 
-                pg_audio_cambiarvolumen(musica_actual, volumen_real[0])
-            else:
-                volumen_real[0] = 0
-
-            #Transiciones
-            if (transicionando):
-                if (tipo_transicion == 0 and trsc_transpariencia > 0):
-                    trsc_transpariencia -= 2
-                elif (tipo_transicion == 1 and trsc_transpariencia < 255):
-                    trsc_transpariencia += 1
+                    pg_audio_cambiarvolumen(musica_actual, volumen_real[0])
                 else:
-                    if (tipo_transicion == 0):
-                        transicionando = False
+                    volumen_real[0] = 0
+
+                #Transiciones
+                if (transicionando):
+                    if (tipo_transicion == 0 and trsc_transpariencia > 0):
+                        trsc_transpariencia -= 2
+                    elif (tipo_transicion == 1 and trsc_transpariencia < 255):
+                        trsc_transpariencia += 1
                     else:
-                        #Esto cambia que elementos mostrar en caso de querer cambiarlo.
-                        pantalla_id = prox_pantallaid
-                        tipo_transicion = 0
-                        volumen_ref[0] = volumen[0]
-                        musica_actual = None
-            
-            #Manejo del Flash
-            if (pantalla_id == 1):
-                if (flash):
+                        if (tipo_transicion == 0):
+                            transicionando = False
+                        else:
+                            #Esto cambia que elementos mostrar en caso de querer cambiarlo.
+                            pantalla_id = prox_pantallaid
+                            tipo_transicion = 0
+                            volumen_ref[0] = volumen[0]
+                            musica_actual = None
+                    
+
+                #Manejo del Flash
+                if (pantalla_id == 1):
                     if (flash_transpariencia > 0):
                         flash_transpariencia -= 4
                     else:
                         flash_transpariencia = 0
-                        flash = False
-            else:
-                flash = False
-                flash_transpariencia = 0
+                else:
+                    flash_transpariencia = 0
+                
+                #Esto es para lo de la notificacion.
+                if (tiempo_msj > 0):
+                    tiempo_msj -= 1
+            
+            ###MOUSE###
+            #Movimiento del puntero
+            case pygame.MOUSEMOTION:
+                if (ingreso_nombre == False):
+                    #Esto es para iluminar los botones que seran seleccionados
+                    for boton in lista_botones:
+                        if (boton.interactuable == True and transicionando == False):
+                            if boton.rect_.collidepoint(pEvent.pos):
+                                boton.mouse_encima = True
+                            else:
+                                boton.mouse_encima = False
+            
+            #Clicks
+            case pygame.MOUSEBUTTONDOWN:
+                for boton in lista_botones:
 
-        #Movimiento del mouse.
-        if (pEvent.type == pygame.MOUSEMOTION):
-            #Esto es para iluminar los botones que seran seleccionados
-            for boton in lista_botones:
-                if (boton.interactuable == True and transicionando == False):
-                    if boton.rect_.collidepoint(pEvent.pos):
-                        boton.mouse_encima = True
-                    else:
-                        boton.mouse_encima = False
-        
-        #Evento de clickeo de mouse.
-        if pEvent.type == pygame.MOUSEBUTTONDOWN:
-            for boton in lista_botones:
+                    #Pulso de boton Normal
+                    #Solo se ejecutara la accion si es interactuable.
+                    if (boton.interactuable == True and transicionando == False and ingreso_nombre == False):
+                        if boton.rect_.collidepoint(pEvent.pos):
+                            activarOpciones = False
 
-                #Pulso de boton Normal
-                #Solo se ejecutara la accion si es interactuable.
-                if (boton.interactuable == True and transicionando == False):
-                    if boton.rect_.collidepoint(pEvent.pos):
-                        activarOpciones = False
+                            if (type(boton) == claseBoton):
+                                reiniciar = (boton.accion_ == 10)   #Ya sabremos si es true o false si la condicion se cumple.
+                                reproducir_sonido = True
 
-                        if (type(boton) == claseBoton):
-                            reiniciar = (boton.accion_ == 12)
-                            reproducir_sonido = True
-
-                            #La accion del boton dependera de su valor de accion.
-                            #Esto originalmente estaba hecho con un match, pero debido a la gran cantidad de lineas
-                            #que usaba lo decidi reducir a unas condicionales. Espero se entienda!
-                            mi_accion = boton.accion_
-                            if (mi_accion > 0 and mi_accion < 9):
-                                #Esto es para decidir correctamente a que pantalla_id iremos.
-                                if (mi_accion < 5):
-                                    pantalla_id = mi_accion - 1
-                                else:
-                                    transicionando = True
-                                    tipo_transicion = 1
-                                    volumen_ref[0] = 0
-                                    prox_pantallaid = mi_accion - 5
+                                #La accion del boton dependera de su valor de accion.
+                                #Esto originalmente estaba hecho con un match, pero debido a la gran cantidad de lineas
+                                #que usaba lo decidi reducir a unas condicionales. Espero se entienda!
+                                mi_accion = boton.accion_
+                                if (mi_accion > 0 and mi_accion < 9):
+                                    #Esto es para decidir correctamente a que pantalla_id iremos.
+                                    if (mi_accion < 5):
+                                        pantalla_id = mi_accion - 1
+                                    else:
+                                        transicionando = True
+                                        tipo_transicion = 1
+                                        volumen_ref[0] = 0
+                                        prox_pantallaid = mi_accion - 5
                                     
-                            elif (mi_accion == 9 or mi_accion == 10):  #Manejo de Volumenes
-                                indice = mi_accion - 9
+                                    #En caso de que vayamos al de preguntar o estemos volviendo de ahi, reiniciaremos 
+                                    #todos sus valores.
+                                    if (prox_pantallaid == 1 or pantalla_id == 1):
+                                        reiniciar = True
 
-                                if (volumen[indice] == 0):
-                                    volumen[indice] = 1
-                                    boton.texto_ = boton.texto_.replace("Desmutear", "Mutear")
-                                else:
-                                    volumen[indice] = 0
-                                    boton.texto_ = boton.texto_.replace("Mutear", "Desmutear")
+                                elif (mi_accion == 9):     #Habilitacion de las preguntas.
                                     
-                                #Esta multiplicacion asegura que solo sea 0.7 (el volumen original de musica) 
-                                #Si el volumen ahora no es 0.
-                                #Se redondea para arriba.
-                                if indice == 0:
-                                    volumen[indice] = 0.7 * math.ceil(volumen[indice])
-                                
-                                volumen_ref[indice] = volumen[indice]
-                                volumen_real[indice] = volumen[indice]
-                            elif (mi_accion == 11):     #Habilitacion de las preguntas.
-                                
-                                if (preguntas_habilitadas == False):
-                                    preguntas_habilitadas = True
-                                    prg_actual = 0
-                                
-                                    #Esto reactiva la musica.
-                                    if (musica_actual == None):
-                                        volumen_real[0] = volumen[0]
-                                        musica_actual = definir_musica(1, volumen_real[0])
+                                    if (preguntas_habilitadas == False):
+                                        preguntas_habilitadas = True
+                                        prg_actual = 0
 
-                                    activarOpciones = True
+                                        if (modo_aleatorio):
+                                            prg_actual = random.randint(0, maximo_preguntas)
+                                    
+                                        #Esto reactiva la musica.
+                                        if (musica_actual == None):
+                                            volumen_real[0] = volumen[0]
+                                            musica_actual = definir_musica(1, volumen_real[0])
+
+                                        activarOpciones = True
+                                    else:
+                                        reproducir_sonido = False
+
+                                if (reproducir_sonido):
+                                    pg_audio_reproducir("Assets\Audio\sndBoton.wav", False, volumen[1])
+
+                            elif (type(boton) == claseBotonOpcion):   #Evento de click para los botones de respuesta.
+                                if (boton.tomar_decision(respuestas[prg_actual], volumen[1]) == True):
+                                    if (intentos_disponibles > 0):
+                                        flash_transpariencia = 128
+                                        flash = True
+                                        puntaje += 10
+                                        contador_preguntas += 1
+                                        activarOpciones = True
+
+                                        #Esto decidira la siguiente pregunta.
+                                        if (contador_preguntas >= maximo_preguntas):
+                                            if (modo_infinito == False):
+                                                for botonOpcion in lista_botones:
+                                                    if type(botonOpcion) == claseBotonOpcion:
+                                                        botonOpcion.interactuable = False
+
+                                                juego_terminado = True
+                                                pg_audio_detener(musica_actual)
+
+                                            prg_actual = 0
+                                        else:
+
+                                            #Decision de siguiente pregunta.
+                                            if (not modo_aleatorio):
+                                                prg_actual += 1
+                                            else:
+                                                anterior_prg = prg_actual
+
+                                                #Buscamos una pregunta aleatoria de las que hay disponibles
+                                                while (prg_actual == anterior_prg):
+                                                    prg_actual = random.randint(0, maximo_preguntas)
+
                                 else:
-                                    reproducir_sonido = False
+                                    #Mostrar que este boton esta deshabilitado si no era el correcto.
+                                    boton.interactuable = False
+                                    intentos_disponibles -= 1
 
-                            if (reproducir_sonido):
-                                pg_audio_reproducir("Assets\Audio\sndBoton.wav", False, volumen[1])
+                                    #Si se nos acabaron los intentos, detenemos el juego.
+                                    if (intentos_disponibles <= 0):
 
-                        elif (type(boton) == claseBotonOpcion):   #Evento de click para los botones de respuesta.
-                            if (boton.tomar_decision(respuestas[prg_actual], volumen[1]) == True):
-                                if (intentos_disponibles > 0):
+                                        #Para ver si le pediremos o no al usuario su nombre, vamos a
+                                        #fijarnos si su puntaje es superior al minimo encontrado del ranking.
+                                        #Esto hay que hacerlo al momento porque el ranking cambia con cada nuevo puntaje.
+                                        if (puntaje > minimo_puntaje_ranking(top_mejores)[0]):
+                                            ingreso_nombre = True
+
+                                        for botonOpcion in lista_botones:
+                                            if type(botonOpcion) == claseBotonOpcion:
+                                                botonOpcion.interactuable = False
+
+                                        juego_terminado = True
+                                        pg_audio_detener(musica_actual)
+                                    
+                                    actualizar_botones = True
+
+                            #BOTONES DE CHECK
+                            elif(type(boton) == claseBotonBandera):
+                                boton.check_ = not(boton.check_) #El bool se invierte.
+                                
+                                #Esto controlara que banderas alterara.
+                                match(boton.id_):
+                                    case 1 | 2: #Musicas/Sonidos
+                                        indice = boton.id_ - 1
+
+                                        if (volumen[indice] == 0):
+                                            volumen[indice] = 1
+                                        else:
+                                            volumen[indice] = 0
+                                        
+                                        #Esta multiplicacion asegura que solo sea 0.7 (el volumen original de musica) 
+                                        #Si el volumen ahora no es 0.
+                                        #Se redondea para arriba.
+                                        if indice == 0:
+                                            volumen[indice] = 0.7 * math.ceil(volumen[indice])
+                                        
+                                        volumen_ref[indice] = volumen[indice]
+                                        volumen_real[indice] = volumen[indice]
+                                
+                                    case 3: #Estado del flash.
+                                        flash_habilitado = boton.check_
+                                    
+                                    case 4: #Preguntas Infinitas
+                                        modo_infinito = boton.check_
+                                    
+                                    case 5: #Preguntas Infinitas
+                                        modo_aleatorio = boton.check_
+
+                                pg_audio_reproducir("Assets\Audio\sndCheck.wav", False, volumen[1])
+                                
+                            
+                            #Esto es para activar los botones de opciones, usados en diversas situaciones.
+                            if (activarOpciones):
+                                for botonOpcion in lista_botones:
+                                    if type(botonOpcion) == claseBotonOpcion:
+                                        botonOpcion.interactuable = True
+                            
+                            #Reinicio del juego
+                            if (reiniciar):
+                                if (prg_actual > 0 or preguntas_habilitadas):
                                     flash_transpariencia = 128
                                     flash = True
-                                    puntaje += 10
-                                    prg_actual += 1
-                                    activarOpciones = True
-                            else:
-                                #Mostrar que este boton esta deshabilitado si no era el correcto.
-                                boton.interactuable = False
-                                intentos_disponibles -= 1
 
-                                #Si se nos acabaron los intentos, detenemos el juego.
-                                if (intentos_disponibles <= 0):
-                                    for botonOpcion in lista_botones:
-                                        if type(botonOpcion) == claseBotonOpcion:
-                                            botonOpcion.interactuable = False
+                                puntaje = 0
 
-                                    juego_terminado = True
+                                if (musica_actual != None):
                                     pg_audio_detener(musica_actual)
+
+                                musica_actual = None
+                                preguntas_habilitadas = False
+                                prg_actual = -1
+                                intentos_disponibles = 2
+
+                                for botonOpcion in lista_botones:
+                                    if type(botonOpcion) == claseBotonOpcion:
+                                        botonOpcion.interactuable = False
                                 
                                 actualizar_botones = True
-                            
-                        
-                        #Esto es para activar los botones de opciones, usados en diversas situaciones.
-                        if (activarOpciones):
-                            for botonOpcion in lista_botones:
-                                if type(botonOpcion) == claseBotonOpcion:
-                                    botonOpcion.interactuable = True
-                        
-                        #Reinicio del juego
-                        if (reiniciar):
-                            flash_transpariencia = 128
-                            flash = True
 
-                            puntaje = 0
+            ###TECLADO###
+            #Nota: KeyDown es usado para reconocer la backspace y el enter. Todo lo demas se usado TextInput.
+            case pygame.KEYDOWN | pygame.TEXTINPUT:
+                if (ingreso_nombre):
+                    if (pEvent.type == pygame.KEYDOWN):
+                        if (pEvent.scancode == 42):
+                            nombre_jugador = nombre_jugador[:-1]  #Se le saca el ultim caracter
+                        elif (pEvent.scancode == 40):
+                            if (contar_elementos(nombre_jugador) > 0):
+                                flash = True
+                                flash_transpariencia = 128
+                                tiempo_msj = 360
+                                pg_audio_reproducir("Assets\Audio\sndCheck.wav", False, volumen[1])
+                                top_mejores['ranking'].pop(minimo_puntaje_ranking(top_mejores)[1])
+                                top_mejores['ranking'].append({'nombre': nombre_jugador, 'puntaje': puntaje})
+                                ordenar_ranking(top_mejores)
+                                print(top_mejores)
+                                ingreso_nombre = False
 
-                            if (musica_actual != None):
-                                pg_audio_detener(musica_actual)
 
-                            musica_actual = None
-                            preguntas_habilitadas = False
-                            prg_actual = -1
-                            intentos_disponibles = 2
-
-                            for botonOpcion in lista_botones:
-                                if type(botonOpcion) == claseBotonOpcion:
-                                    botonOpcion.interactuable = False
-                            
-                            actualizar_botones = True
+                    else:   #TextInput
+                        if (contar_elementos(nombre_jugador) < 15):
+                            nombre_jugador += pEvent.text
+                
+            #El usuario va a quiere la ventana.
+            case pygame.QUIT:
+                bucleJuego = False
 
     #Musica y Fondo
     pantalla.fill(C_NEGRO)    #Aca hay un filling para sobreponer todo lo que estaba antes.
@@ -405,16 +523,15 @@ while bucleJuego:
             lista = top_mejores['ranking']
 
             #El color de texto va a variar dependiendo de que tan alto en el ranking esta el jugador.
-            color_texto = [255, 255, 255]
+            color_texto = [85, 0, 255]
             if (i == 0):    #Primero
                 color_texto = [255, 255, 0]
             elif (i == 1):    #Segundo
                 color_texto = [150, 150, 150]
             elif (i == 2):    #Tercero
                 color_texto = [165, 55, 0]
-
-            pg_crear_texto(pantalla, f"{i+1} . {lista[i]['nombre']:20}{escribir_puntaje(lista[i]['puntaje'])}", 
-                [resolucion[0] / 2, 140+(48*i)], color_texto, 48, True)
+            pg_crear_texto(pantalla, f"{i+1} . {lista[i]['nombre']}",[resolucion[0] / 2 - 220, 140+(48*i)], color_texto, 48, False)
+            pg_crear_texto(pantalla, f"{escribir_puntaje(lista[i]['puntaje'])}",[resolucion[0] / 2 + 150, 140+(48*i)], color_texto, 48, False)
 
     #Dibujado de botones.
     for boton in lista_botones:
@@ -444,7 +561,23 @@ while bucleJuego:
     if (pantalla_id == 1):
         pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgFlash.png"), 1, flash_transpariencia)
 
+        #Cuadro para poner el nombre.
+        if (ingreso_nombre == True):
+            #Esta imagen es para permitir enfocar mejor el recuadro del nombre.
+            pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgDesvanecimiento.png"), 1, 225)
+            pg_crear_texto(pantalla, "Porfavor Ingrese su nombre", [resolucion[0] / 2, resolucion[1] / 2 - 60], C_BLANCO, 60, True)
+            pg_dibujar_rectangulo(pantalla, C_GRIS, [resolucion[0] / 2 - 168, resolucion[1] / 2 + 16], [400, 48], 1)
+            pg_dibujar_rectangulo(pantalla, C_BLANCO, [resolucion[0] / 2 - 200, resolucion[1] / 2], [400, 48], 1)
+            pg_crear_texto(pantalla, nombre_jugador, [resolucion[0] / 2, resolucion[1] / 2 + 25], C_NEGRO, 50, True)
+            pg_crear_texto(pantalla, "Presione ENTER si termino", [resolucion[0] / 2, resolucion[1] / 2 + 120], C_BLANCO, 60, True)
+
+    if (tiempo_msj > 0):
+        pg_crear_texto(pantalla, "Tu puntaje ha sido guardado!", [0, 640-32], [0, 255, 0])
+        
     pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgDesvanecimiento.png"), 1, trsc_transpariencia)
     pygame.display.flip()   #Actualiza el dibujado de la pantalla
+
+#Esto va a modificar el ranking cuando termine el bucle del juego.
+crear_archivo_diccionario("Preguntados_Ranking", "json", top_mejores)
 
 pygame.quit() # Fin

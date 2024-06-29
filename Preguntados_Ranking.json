@@ -2,31 +2,31 @@
     "ranking": [
         {
             "nombre": "Hernan",
+            "puntaje": 140
+        },
+        {
+            "nombre": "Matias",
+            "puntaje": 110
+        },
+        {
+            "nombre": "Marcos",
             "puntaje": 90
         },
         {
-            "nombre": "Hernan",
-            "puntaje": 100
+            "nombre": "Julian",
+            "puntaje": 50
         },
         {
-            "nombre": "Hernan",
-            "puntaje": 10
-        },
-        {
-            "nombre": "Hernan",
+            "nombre": "Martin",
             "puntaje": 40
         },
         {
-            "nombre": "Hernan",
-            "puntaje": 30
-        },
-        {
-            "nombre": "Hernan",
-            "puntaje": 60
-        },
-        {
-            "nombre": "Hernan",
+            "nombre": "Mily",
             "puntaje": 20
+        },
+        {
+            "nombre": "Cristian",
+            "puntaje": 10
         }
     ]
 }

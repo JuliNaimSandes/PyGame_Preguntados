@@ -112,6 +112,30 @@ def ordenar_ranking(diccionario: dict) -> list:
     
     return ranking_ordenado
 
+def minimo_puntaje_ranking(ranking : dict) -> list:
+    '''
+        Se devolvera una lista de 2 dimensiones, el primer indice contiene el puntaje mas bajo
+        y el 2do el indice de donde se encuentra.
+        Devolvera false si el ranking esta vacio.
+        Args
+        ranking (dict) : Diccionario con el ranking
+
+        Return
+        minimo (list) : Lista con las caracteristicas antes mencionadas.
+    '''
+
+    minimo = False
+
+    if (contar_elementos(ranking) > 0):
+        minimo = [None, None]
+
+        for i in range(contar_elementos(ranking['ranking'])):
+            puntaje = ranking['ranking'][i]['puntaje']
+            if (minimo[0] == None or puntaje < minimo[0]):
+                minimo = [puntaje, i]
+    
+    return minimo
+
 '''
 FUNCIONES ORIENTADAS A PYGAME
 
@@ -126,7 +150,7 @@ def pg_dibujar_circulo(pantalla : pygame.surface, color : list, ubicacion : list
     #Args: Pantalla a dibujar sobre, color, [X, Y], radio.
     pygame.draw.circle(pantalla, color, ubicacion, radio)
 
-def pg_dibujar_rectangulo(pantalla : pygame.surface, color : list, ubicacion : list, tamanio : list, radio_bordes : int = -1):
+def pg_dibujar_rectangulo(pantalla : pygame.surface, color : list, ubicacion : list, tamanio : list, radio_bordes : int = -1, alpha : float = 0.0):
     #Verficaciones
     color = validar_lista(color, 3, "Color Invalido!")
     ubicacion = validar_lista(ubicacion, 2, "Ubicacion Invalida!")
@@ -164,14 +188,14 @@ def pg_crear_texto(pantalla : pygame.surface, texto : str, ubicacion : list, col
     else:
         pantalla.blit(texto_instancia, ubicacion)
 
-def pg_dibujar_imagen(pantalla : pygame.surface, imagen : pygame.image, ubicacion : list, escala : float = 1.0, angulo : float = 0.0, transparencia : int = 255):
+def pg_dibujar_imagen(pantalla : pygame.surface, imagen : pygame.image, ubicacion : list, escala : float = 1.0, angulo : float = 0.0, transparencia : int = 255) -> pygame.rect:
     #Verificaciones
     ubicacion = validar_lista(ubicacion, 2, "Ubicacion Invalida!")
 
     imagen = pygame.transform.scale_by(imagen, escala)
     imagen = pygame.transform.rotate(imagen, angulo)
     imagen.set_alpha(transparencia)
-    pantalla.blit(imagen, ubicacion)
+    return pantalla.blit(imagen, ubicacion)
     
 
 def pg_extraer_frames(imagen : pygame.image, frames : int = 1, tamanio_frames : list = [16, 16]) -> list:
