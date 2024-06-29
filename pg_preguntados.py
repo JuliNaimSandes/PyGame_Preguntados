@@ -52,7 +52,7 @@ class claseBoton():
         self.accion_ = accion    #La accion que hara este boton, cada accion esta definida en mouseclickdown.
         self.elemento_id = elemento_id
         
-        self.color_ = [255, 255, 255] #Color del rectangulo.
+        self.color_ = C_BLANCO #Color del rectangulo.
         self.color_borde_ = [0, 65, 255] #Color de los bordes
         self.color_aux_ = self.color_
         self.color_borde_aux_ = self.color_borde_
@@ -70,8 +70,8 @@ class claseBoton():
 
                 #Se ilumina el borde si esta el mouse encima.
                 if (self.mouse_encima):
-                    self.color_ = [255, 255, 255]
-                    self.color_borde_ = [255, 255, 255]
+                    self.color_ = C_BLANCO
+                    self.color_borde_ = C_BLANCO
             else:
                 self.color_ = [64, 64, 64]
                 self.color_borde_ = [32, 32, 32]
@@ -135,18 +135,6 @@ class claseBotonBandera():
             #Dibujado del texto y la imagen.
             pg_crear_texto(pantalla, self.texto_, [self.ubicacion_[0] - self.dist_txtb_, self.ubicacion_[1] + 24], [200, 255, 200], 42, True)
             self.rect_ = pg_dibujar_imagen(pantalla, imagen, [self.ubicacion_[0] + self.dist_txtb_, self.ubicacion_[1]], 3)
-
-#Decidi dejar este metodo aca por lo unico para este programa que es.
-def buscar_check_por_id(lista_objetos : list, id_arg : int) -> claseBotonBandera:
-    boton_encontrado = None
-    if (contar_elementos(lista_objetos) > 0):
-        for boton in lista_objetos:
-            if (type(boton) == claseBotonBandera):
-                if (boton.id_ == id_arg):
-                    boton_encontrado = boton
-                    break
-
-    return boton_encontrado
 
 
 #Inicializadores
@@ -321,7 +309,7 @@ while bucleJuego:
                                     
                                     #En caso de que vayamos al de preguntar o estemos volviendo de ahi, reiniciaremos 
                                     #todos sus valores.
-                                    if (prox_pantallaid == 1 or pantalla_id == 1):
+                                    if (pantalla_id == 1):
                                         reiniciar = True
 
                                 elif (mi_accion == 9):     #Habilitacion de las preguntas.
@@ -481,8 +469,6 @@ while bucleJuego:
                                 ordenar_ranking(top_mejores)
                                 print(top_mejores)
                                 ingreso_nombre = False
-
-
                     else:   #TextInput
                         if (contar_elementos(nombre_jugador) < 15):
                             nombre_jugador += pEvent.text
@@ -510,7 +496,7 @@ while bucleJuego:
             [resolucion[0] / 2, 80], [255, 65, 65], 30, True)
 
         #Pregunta
-        if (prg_actual >= 0 and prg_actual < len(preguntas)):
+        if (prg_actual >= 0 and prg_actual < contar_elementos(preguntas)):
             pg_crear_texto(pantalla, f"{preguntas[prg_actual]}", [resolucion[0] / 2, 220], [255, 255, 0], 42, True)
 
     #Texto del ranking y el mismo ranking
@@ -519,7 +505,7 @@ while bucleJuego:
             [resolucion[0] / 2, 80], [250, 250, 45], 65, True)
         
         #Impresion de los mejores y sus nombres
-        for i in range(len(top_mejores['ranking'])):
+        for i in range(contar_elementos(top_mejores['ranking'])):
             lista = top_mejores['ranking']
 
             #El color de texto va a variar dependiendo de que tan alto en el ranking esta el jugador.
@@ -544,7 +530,7 @@ while bucleJuego:
             if (actualizar_botones):
                 if (type(boton) == claseBotonOpcion):
                     #Esto cambiara el texto de las opciones por las respuestas.
-                    if (preguntas_habilitadas and (prg_actual > -1 and prg_actual < len(preguntas))):
+                    if (preguntas_habilitadas and (prg_actual > -1 and prg_actual < contar_elementos(preguntas))):
                         #Vamos a referenciar la opcion con el indice de la letra de la opcion en numero.
                         #Esto se puede calcular facil con una tabla ASCII, aca la "a" es 61.
                         #boton.interactuable = True

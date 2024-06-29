@@ -8,7 +8,7 @@ CX = 0
 CY = 1
 
 #Colores Basicos
-C_NEGRO = [0, 0, 0]
+C_NEGRO = C_NEGRO
 C_GRIS = [128, 128, 128]
 C_BLANCO = [255, 255, 255]
 
@@ -74,7 +74,7 @@ def validar_lista(lista : list, max_elementos : int, msg : str, val_pred : int =
     if (type(lista) != list):
         lista = [lista]
     
-    if (len(lista) < max_elementos or len(lista) > max_elementos):
+    if (contar_elementos(lista) < max_elementos or contar_elementos(lista) > max_elementos):
         lista = []
         for i in range(max_elementos):
             lista.append(val_pred)
@@ -154,7 +154,7 @@ def pg_dibujar_rectangulo(pantalla : pygame.surface, color : list, ubicacion : l
     #Verficaciones
     color = validar_lista(color, 3, "Color Invalido!")
     ubicacion = validar_lista(ubicacion, 2, "Ubicacion Invalida!")
-    if (len(tamanio) == 1):
+    if (contar_elementos(tamanio) == 1):
         tamanio.append(tamanio_r[0])
     else:
         tamanio = validar_lista(tamanio, 2, "Tamaño Invalido!")
@@ -174,7 +174,7 @@ def pg_dibujar_linea(pantalla : pygame.surface, color : list, ubicacion_in : lis
 def pg_titulo(texto : str):
     pygame.display.set_caption(texto)
 
-def pg_crear_texto(pantalla : pygame.surface, texto : str, ubicacion : list, color : list = [0, 0, 0], tamanio : int = 25, centrado : bool = False, fuente : str = "Arial Narrow"):
+def pg_crear_texto(pantalla : pygame.surface, texto : str, ubicacion : list, color : list = C_NEGRO, tamanio : int = 25, centrado : bool = False, fuente : str = "Arial Narrow"):
     #Verificaciones
     color = validar_lista(color, 3, "Color Invalido!")
     ubicacion = validar_lista(ubicacion, 2, "Ubicacion Invalida!")
