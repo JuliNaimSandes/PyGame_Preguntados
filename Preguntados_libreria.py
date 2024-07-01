@@ -2,13 +2,13 @@ import pygame   #Importacion de la libreria.
 import json as jsonFunciones
 import os as SistemaOperativo
 
-#Constantes
+#############CONSTANTES###############
 #Para normalmente referenciar los ejes X e Y, voy a usar estas 2 constantes por si necesitamos algun cambio.
 CX = 0
 CY = 1
 
 #Colores Basicos
-C_NEGRO = C_NEGRO
+C_NEGRO = [0, 0, 0]
 C_GRIS = [128, 128, 128]
 C_BLANCO = [255, 255, 255]
 
@@ -24,7 +24,7 @@ def contar_elementos(elementos) -> int:
         Recibe string/lista.
         Retorna la cantidad de caracteres de una cadena o la cantidad de elementos de una lista.
     '''
-
+    
     contador = 0
     for i in elementos:
         contador += 1
@@ -63,6 +63,7 @@ def leer_archivo_json(ruta: str):
         Args
         ruta (str) : Ruta del archivo.
     '''
+
     datos_json = {}
     if (SistemaOperativo.path.exists(ruta)):
         with open(ruta,"r") as archivo:
@@ -136,20 +137,17 @@ def minimo_puntaje_ranking(ranking : dict) -> list:
     
     return minimo
 
+def borrar_ultimocaracter(cadena : str) -> str:
+    nueva_cadena = ""
+    for i in range(len(cadena)-1):
+        nueva_cadena += cadena[i]
+    return nueva_cadena
+
 '''
 FUNCIONES ORIENTADAS A PYGAME
 
 Mas que nada dibujado de formas!
 '''
-def pg_dibujar_circulo(pantalla : pygame.surface, color : list, ubicacion : list, radio : int):
-    #Verficaciones
-    color = validar_lista(color, 3, "Color Invalido!")
-    ubicacion = validar_lista(ubicacion, 2, "Ubicacion Invalida!")
-    radio = int(radio)
-
-    #Args: Pantalla a dibujar sobre, color, [X, Y], radio.
-    pygame.draw.circle(pantalla, color, ubicacion, radio)
-
 def pg_dibujar_rectangulo(pantalla : pygame.surface, color : list, ubicacion : list, tamanio : list, radio_bordes : int = -1, alpha : float = 0.0):
     #Verficaciones
     color = validar_lista(color, 3, "Color Invalido!")
@@ -161,18 +159,6 @@ def pg_dibujar_rectangulo(pantalla : pygame.surface, color : list, ubicacion : l
 
     #Args: Pantalla a dibujar sobre, color, [X, Y, Ancho, Alto]
     return pygame.draw.rect(pantalla, color, [ubicacion[CX], ubicacion[CY], tamanio[0], tamanio[1]], 0, radio_bordes)
-
-def pg_dibujar_linea(pantalla : pygame.surface, color : list, ubicacion_in : list, ubicacion_fi : list, tamanio : int = 1):
-    #Verficaciones
-    color = validar_lista(color, 3, "Color Invalido!")
-    ubicacion_in = validar_lista(ubicacion_in, 2, "Ubicacion Inicial Invalida!", 1)
-    ubicacion_fi = validar_lista(ubicacion_fi, 2, "Ubicacion Final Invalida!", 1)
-    tamanio = int(tamanio)
-
-    pygame.draw.line(pantalla, color, ubicacion_in, ubicacion_fi, tamanio)
-
-def pg_titulo(texto : str):
-    pygame.display.set_caption(texto)
 
 def pg_crear_texto(pantalla : pygame.surface, texto : str, ubicacion : list, color : list = C_NEGRO, tamanio : int = 25, centrado : bool = False, fuente : str = "Arial Narrow"):
     #Verificaciones
@@ -196,28 +182,6 @@ def pg_dibujar_imagen(pantalla : pygame.surface, imagen : pygame.image, ubicacio
     imagen = pygame.transform.rotate(imagen, angulo)
     imagen.set_alpha(transparencia)
     return pantalla.blit(imagen, ubicacion)
-    
-
-def pg_extraer_frames(imagen : pygame.image, frames : int = 1, tamanio_frames : list = [16, 16]) -> list:
-    tamanio_frames = validar_lista(tamanio_frames, 2, "Tamaño de frames Invalido!")
-    frames_ = []
-    frames_definidos = 0
-    recortes = [imagen.get_width() / tamanio_frames[0], imagen.get_height() / tamanio_frames[1]]
-
-    for i in range(round(recortes[0])):
-        #Esto va a operar hasta que tengamos todos los frames definidos
-        if (frames_definidos > frames):
-            break
-        for j in range(round(recortes[1])):
-            if (frames_definidos > frames):
-                break
-            celday = tamanio_frames[CY] * i
-            celdax = tamanio_frames[CX] * j
-            frames_.append(imagen.subsurface(celdax, celday, tamanio_frames[CX], tamanio_frames[CY]))
-            
-            frames_definidos += 1
-    
-    return frames_
 
 def pg_dibujar_boton(pantalla : pygame.surface, texto : str = "Boton", ubicacion : list = [0, 0], tamanio = [32, 24], color : list = C_BLANCO, color_borde : list = C_NEGRO, color_texto : list = C_NEGRO):
     color = validar_lista(color, 3, "Color Invalido!")
@@ -286,15 +250,17 @@ def pg_audio_reproducir(ruta_musica : str, bucle : bool = False, volumen : float
     return sonido
 
 def pg_audio_detener(sonido : pygame.mixer.Sound):
-    sonido.stop()
+    if (sonido != None):
+        sonido.stop()
 
 def pg_audio_cambiarvolumen(sonido : pygame.mixer.Sound, volumen_nuevo : float = 0.0):
-    if (volumen_nuevo > 1.0):
-        volumen_nuevo = 1.0
-    elif (volumen_nuevo < 0.0):
-        volumen_nuevo = 0.0
-    
-    sonido.set_volume(volumen_nuevo)
+    if (sonido != None):
+        if (volumen_nuevo > 1.0):
+            volumen_nuevo = 1.0
+        elif (volumen_nuevo < 0.0):
+            volumen_nuevo = 0.0
+        
+        sonido.set_volume(volumen_nuevo)
 
 #El puntaje va con 3 digitos, asi que para escribirlo usaremos este metodo.
 def escribir_puntaje(puntj : int) -> str:
@@ -318,30 +284,30 @@ def escribir_puntaje(puntj : int) -> str:
 def dibujar_fondo(pantalla : pygame.surface, pantalla_id : int):
     match(pantalla_id):
         case 0:
-            pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Assets\Imagenes\imgFondo2.png"), 5)
+            pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Recursos\Imagenes\imgFondo2.png"), 5)
 
         case 1: #Fondo de las preguntas
             pantalla.fill([12, 24, 13])
-            pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgFondo3.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
+            pg_dibujar_imagen(pantalla, pygame.image.load("Recursos\Imagenes\imgFondo3.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
 
         case 2: #Fondo de configuracion
             pantalla.fill([17, 18, 40])
-            pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgFondo4.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
+            pg_dibujar_imagen(pantalla, pygame.image.load("Recursos\Imagenes\imgFondo4.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
 
         case 3: #Fondo del ranking
             pantalla.fill([62, 42, 12])
-            pg_dibujar_imagen(pantalla, pygame.image.load("Assets\Imagenes\imgFondo5.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
+            pg_dibujar_imagen(pantalla, pygame.image.load("Recursos\Imagenes\imgFondo5.png"), [(pantalla.get_width() / 2) - 320, 0], 4)
 
 #Funcion para definir que musica usar segun la pantalla id.
 def definir_musica(pantalla_id : int, volumen : float) -> pygame.mixer_music:
     match(pantalla_id):
         case 1: #Musica de las preguntas (Solo se reproducira si las preguntas ya estan habilitadas!)
-            musica = "Assets\Audio\musPreguntas.wav"
+            musica = "Recursos\Audio\musPreguntas.wav"
         
         case 3: #Musica del Ranking
-            musica = "Assets\Audio\musPuntaje.wav"
+            musica = "Recursos\Audio\musPuntaje.wav"
 
         case _: #Por defecto se usa la musica del menu.
-            musica = "Assets\Audio\musMenu.wav"
+            musica = "Recursos\Audio\musMenu.wav"
 
     return pg_audio_reproducir(musica, True, volumen)

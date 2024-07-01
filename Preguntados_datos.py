@@ -15,5 +15,17 @@ lista = [
        {'pregunta': '¿A qué país pertenece la Isla de Pascua?', 'a': 'Argentina', 'b': 'Chile', 'c':'Brasil' ,'correcta': 'b'},
        {'pregunta': '¿Cuál es el país más grande del mundo?', 'a': 'China', 'b': 'Canada', 'c':'Rusia' ,'correcta': 'c'},
        {'pregunta': '¿Cuál es el lugar más frío de la tierra?', 'a': 'Rusia', 'b': 'Antartida', 'c':'Groenlandia' ,'correcta': 'b'},
-       {'pregunta': '¿Cuál es el río más largo del planeta?', 'a': 'Amazonas', 'b': 'Nilo', 'c':'Misisipi' ,'correcta': 'a'}
+       {'pregunta': '¿Cuál es el río más largo del planeta?', 'a': 'Amazonas', 'b': 'Nilo', 'c':'Misisipi' ,'correcta': 'a'},
+
+       #NUEVAS PREGUNTAS
+       {'pregunta': '¿Que obtienes mezclando verde y rojo?', 'a': 'Azul', 'b': 'Naranja', 'c':'Amarillo' ,'correcta': 'c'},
+       {'pregunta': '¿En que año salio la primera PlayStation?', 'a': '1994', 'b': '1995', 'c':'1996' ,'correcta': 'a'},
+       {'pregunta': '¿A que equivale X en: 2 + (X / 2) = 10?', 'a': '8', 'b': '12', 'c':'16' ,'correcta': 'c'},
+       {'pregunta': '¿Que animal acuatico puede regenerar sus partes?', 'a': 'Pez Globo', 'b': 'Estrella de mar', 'c':'Calamar' ,'correcta': 'b'},
+       {'pregunta': '¿Que constelacion es conocida como "El Cazador"?', 'a': 'Orion', 'b': 'Sagitario', 'c':'Andromeda' ,'correcta': 'a'},
+       {'pregunta': '¿Que planeta de los nombrados tiene anillos?', 'a': 'Neptuno', 'b': 'Urano', 'c':'Saturno' ,'correcta': 'c'},
+       {'pregunta': '¿En que año se invento el Avion?', 'a': '1914', 'b': '1903', 'c':'1932' ,'correcta': 'b'},
+       {'pregunta': '¿Donde queda ubicado San Marino?', 'a': 'Oceania', 'b': 'America', 'c':'Europa' ,'correcta': 'c'},
+       {'pregunta': '¿Cual de estos materiales es conductor electrico?', 'a': 'Oro', 'b': 'Piedra', 'c':'Hidrocarburo' ,'correcta': 'a'},
+       {'pregunta': '¿En que plataforma salio el primer juego de Mario?', 'a': 'Consola', 'b': 'Arcade', 'c':'Computadora' ,'correcta': 'b'}
 ]
