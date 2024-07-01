@@ -5,6 +5,10 @@
             "puntaje": 140
         },
         {
+            "nombre": "Cesar",
+            "puntaje": 130
+        },
+        {
             "nombre": "Matias",
             "puntaje": 110
         },
@@ -13,16 +17,12 @@
             "puntaje": 100
         },
         {
-            "nombre": "Mariana",
+            "nombre": "Mariano",
             "puntaje": 90
         },
         {
             "nombre": "Julian",
             "puntaje": 80
-        },
-        {
-            "nombre": "Marcelo",
-            "puntaje": 40
         },
         {
             "nombre": "Belen",

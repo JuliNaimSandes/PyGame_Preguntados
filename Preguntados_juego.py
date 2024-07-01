@@ -79,7 +79,7 @@ botones_opcion_pos = [ub_boton_y, ub_boton_y+64, ub_boton_y+128]#Esto va a tener
 lista_botones = [
     claseBoton("Jugar", [ub_boton_x, ub_boton_y-tam_boton[1]-sep_botones], tam_boton, [2, 1], 0),
     claseBoton("Ver Puntajes", [ub_boton_x, ub_boton_y], tam_boton, [2, 3], 0),
-    claseBoton("Salir", [ub_boton_x, ub_boton_y+(tam_boton[1]+sep_botones)*2], tam_boton, [0, 0], 0),
+    claseBoton("Salir", [ub_boton_x, ub_boton_y+(tam_boton[1]+sep_botones)*2], tam_boton, [5, 0], 0),
     claseBoton("Pregunta", [ub_boton_x, 120], tam_boton, [3, 0], 1),
     claseBoton("Reiniciar", [ub_boton_x + round((resolucion[0] / 2) / 2), 556], tam_boton, [4, 0], 1),
     claseBoton("Configuracion", [ub_boton_x, ub_boton_y+tam_boton[1]+sep_botones], tam_boton, [1, 2], 0),
@@ -227,6 +227,8 @@ while bucleJuego:
                                                 prg_actual = random.randint(0, contar_elementos(preguntas))
                                             else:
                                                 prg_actual = 0
+                                            
+                                            contador_preguntas = 0
                                         
                                             #Esto reactiva la musica.
                                             if (musica_actual == None):
@@ -237,9 +239,11 @@ while bucleJuego:
                                             reorganizar_altitudes = True
                                     
                                     #Efecto 4: Reinicia el juego (arriba esta definido!)
+
                                     #Efecto 5: Salir del juego
                                     if (boton.accion_[0] == 5):
                                         bucleJuego = False         
+
                             elif (type(boton) == claseBotonOpcion):   #Evento de click para los botones de respuesta.
 
                                 #Nos fijaremos si el boton pulsado dio que la respuesta correcta
@@ -261,6 +265,15 @@ while bucleJuego:
 
                                                 if (puntaje > minimo_puntaje_ranking(datos_importados)[0]):
                                                     ingreso_nombre = True
+                                            else:
+                                                #Volvemos al inicio si el modo infinito esta activado.
+                                                #Si esta el modo aleatorio activo, buscamos una pregunta aleatoria.
+                                                if (modo_aleatorio == False):
+                                                    prg_actual = 0
+                                                else:
+                                                    anterior_prg = prg_actual
+                                                    while (prg_actual == anterior_prg):
+                                                        prg_actual = random.randint(0, contar_elementos(preguntas))
                                         else:
                                             #Decision de siguiente pregunta.
                                             if (modo_aleatorio == False):
@@ -345,6 +358,8 @@ while bucleJuego:
                                 flash_transpariencia = 128
                                 tiempo_msj = 360
                                 pg_audio_reproducir("Recursos\Audio\sndCheck.wav", False, volumen[1])
+
+                                #Esto va a eliminar el puntaje mas bajo y pondra al puntaje recien ingresado.
                                 datos_importados['ranking'].pop(minimo_puntaje_ranking(datos_importados)[1])
                                 datos_importados['ranking'].append({'nombre': nombre_jugador, 'puntaje': puntaje})
                                 ordenar_ranking(datos_importados)
@@ -364,8 +379,7 @@ while bucleJuego:
 
     #Logo de la primera pantalla
     if (pantalla_id == 0):
-        pg_dibujar_imagen(pantalla, pygame.image.load("Recursos\Imagenes\imgLogo.png"), 
-            [resolucion[0] / 2 - 320, 60], 0.5)
+        pg_dibujar_imagen(pantalla, "Recursos\Imagenes\imgLogo.png", [resolucion[0] / 2 - 320, 60], 0.5)
     
     #Pantalla de preguntas
     if (pantalla_id == 1):
@@ -439,14 +453,13 @@ while bucleJuego:
     if (pantalla_id == 1):
         #Dibujado del flash
         if (flash_habilitado):
-            pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Recursos\Imagenes\imgFlash.png"), 
-            1, flash_transpariencia)
+            pg_dibujar_imagen_repetida(pantalla, "Recursos\Imagenes\imgFlash.png", 1, flash_transpariencia)
 
         #Cuadro para poner el nombre.
         if (ingreso_nombre == True):
 
             #Esta imagen es para permitir enfocar mejor el recuadro del nombre.
-            pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Recursos\Imagenes\imgDesvanecimiento.png"), 1, 225)
+            pg_dibujar_imagen_repetida(pantalla, "Recursos\Imagenes\imgDesvanecimiento.png", 1, 225)
             pg_crear_texto(pantalla, "Porfavor Ingrese su nombre", [resolucion[0] / 2, resolucion[1] / 2 - 60], C_BLANCO, 60, True)
             pg_dibujar_rectangulo(pantalla, C_GRIS, [resolucion[0] / 2 - 168, resolucion[1] / 2 + 16], [400, 48], 1)
             pg_dibujar_rectangulo(pantalla, C_BLANCO, [resolucion[0] / 2 - 200, resolucion[1] / 2], [400, 48], 1)
@@ -456,7 +469,7 @@ while bucleJuego:
     if (tiempo_msj > 0):
         pg_crear_texto(pantalla, "Tu puntaje ha sido guardado!", [0, 640-32], [0, 255, 0])
         
-    pg_dibujar_imagen_repetida(pantalla, pygame.image.load("Recursos\Imagenes\imgDesvanecimiento.png"), 1, trsc_transpariencia)
+    pg_dibujar_imagen_repetida(pantalla, "Recursos\Imagenes\imgDesvanecimiento.png", 1, trsc_transpariencia)
     pygame.display.flip()   #Actualiza el dibujado de la pantalla
 
 #Esto va a modificar los datos que se obtuvieron antes del bucle por los nuevos.

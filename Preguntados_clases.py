@@ -90,11 +90,11 @@ class claseBotonBandera():
     def dibujar(self, pantalla : pygame.surface, pantalla_id : int):
         if (self.elemento_id == pantalla_id):
             if (self.interactuable == True):
-                imagen = pygame.image.load("Recursos\Imagenes\imgActivado.png")
+                imagen = "Recursos\Imagenes\imgActivado.png"
                 if (self.check_ == False):
-                    imagen = pygame.image.load("Recursos\Imagenes\imgDesactivado.png")
+                    imagen = "Recursos\Imagenes\imgDesactivado.png"
             else:
-                imagen = pygame.image.load("Recursos\Imagenes\imgCheckND.png")
+                imagen = "Recursos\Imagenes\imgCheckND.png"
                 
             #Dibujado del texto y la imagen.
             pg_crear_texto(pantalla, self.texto_, [self.ubicacion_[0] - self.dist_txtb_, self.ubicacion_[1] + 24], [200, 255, 200], 42, True)
